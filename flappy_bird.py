@@ -6,7 +6,7 @@ import sys
 pygame.init()
 
 # Screen dimensions and settings
-SCREEN_WIDTH = 400
+SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 GROUND_HEIGHT = 100
 PIPE_WIDTH = 80
@@ -91,15 +91,14 @@ def create_enemy():
 
 def draw_enemies():
     for enemy in enemies:
-      # Rocket-like body
-      pygame.draw.rect(screen, RED, enemy)
-      # Rocket nose (triangle pointing forward in front of the rectangle)
-      pygame.draw.polygon(screen, BLACK, [
-          (enemy.x - 30, enemy.y + enemy.height // 2),      # Tip of the triangle (centered in front of the rectangle)
-          (enemy.x + 10, enemy.y),                               # Top corner of the triangle
-          (enemy.x + 10, enemy.y + enemy.height)                 # Bottom corner of the triangle
-      ])
-
+        # Rocket-like body
+        pygame.draw.rect(screen, RED, enemy)
+        # Rocket nose (triangle pointing forward in front of the rectangle)
+        pygame.draw.polygon(screen, BLACK, [
+            (enemy.x - 30, enemy.y + enemy.height // 2),  # Tip of the triangle
+            (enemy.x + 10, enemy.y),  # Top corner
+            (enemy.x + 10, enemy.y + enemy.height)  # Bottom corner
+        ])
 
 def move_enemies():
     global enemies
@@ -121,7 +120,7 @@ def check_collision():
     if bird_y <= 0 or bird_y + bird_sprite.get_height() >= SCREEN_HEIGHT - GROUND_HEIGHT:
         return True
     return False
-
+    
 # Game loop
 running = True
 while running:
@@ -146,6 +145,10 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 bird_velocity = FLAP_STRENGTH
+            elif event.key == pygame.K_p:  # Press 'P' to take a screenshot
+                screenshot_filename = f"screenshot_{pygame.time.get_ticks()}.png"
+                pygame.image.save(screen, screenshot_filename)
+                print(f"Screenshot saved as {screenshot_filename}")
 
     # Bird physics
     bird_velocity += GRAVITY
@@ -167,7 +170,15 @@ while running:
     score_text = font.render(f"Score: {score}", True, BLACK)
     screen.blit(score_text, (10, 10))
 
+    # Update display
     pygame.display.flip()
+
+    # Screenshot should be captured after all elements are drawn
+    if pygame.key.get_pressed()[pygame.K_p]:  # Continuous check for 'P'
+        screenshot_filename = f"screenshot_{pygame.time.get_ticks()}.png"
+        pygame.image.save(screen, screenshot_filename)
+        print(f"Screenshot saved as {screenshot_filename}")
+
     pygame.time.Clock().tick(30)
 
 pygame.quit()
